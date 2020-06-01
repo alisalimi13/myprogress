@@ -1,0 +1,98 @@
+/*In The Name Of Allah*/
+
+.aa-rtl-all, .aa-rtl-all * {
+	direction: rtl;
+    text-align: right;
+}
+
+.aa-rtl, .aa-rtl * {
+	direction: rtl;
+    text-align: right;
+}
+
+.aa-rtl button {
+    text-align: center;
+}
+
+/*Heights*/
+
+.aa-h-0 {
+  height: 0% !important;
+}
+
+.aa-h-10 {
+  height: 10% !important;
+}
+
+.aa-h-20 {
+  height: 20% !important;
+}
+
+.aa-h-30 {
+  height: 30% !important;
+}
+
+.aa-h-40 {
+  height: 40% !important;
+}
+
+.aa-h-50 {
+  height: 50% !important;
+}
+
+.aa-h-60 {
+  height: 60% !important;
+}
+
+.aa-h-70 {
+  height: 70% !important;
+}
+
+.aa-h-80 {
+  height: 80% !important;
+}
+
+.aa-h-90 {
+  height: 90% !important;
+}
+
+.aa-h-100 {
+  height: 100% !important;
+}
+
+
+/*Others*/
+
+.aa-oh {
+	overflow: hidden;
+}
+
+.aa-tac {
+	text-align: center;
+}
+
+.aa-tar {
+	text-align: right;
+}
+
+.aa-tal {
+	text-align: left;
+}
+
+.aa-br-0 {
+	border-radius: 0;
+}
+
+.aa-hcp:hover {
+	cursor: pointer;
+}
+
+.aa-card-column > .card {
+    margin-bottom: 10px;
+}
+
+.aa-br-50 {
+	border-radius: 50%;
+}
+
+

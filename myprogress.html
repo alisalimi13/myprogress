@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MyProgress</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="source\bootstrap.min.css">
+	<link rel="stylesheet" href="source\aa.css">
+</head>
+<body id="root" class="container">
+	<header id="header" class="m-4" v-show="RootV.isReady">
+		<h1>
+			<span>MyProgress</span>
+			<span class="dropdown">
+				<span class="badge badge-dark aa-hcp" data-toggle="dropdown">{{(RootV.database?RootV.database.progresser:'')}}</span>
+				<div class="dropdown-menu">
+					<button type="button" class="dropdown-item btn btn-sm btn-light" @click="newDirection">New Direction</button>
+					<button type="button" class="dropdown-item btn btn-sm btn-light" @click="newProgress">New Progress</button>
+					<button type="button" class="dropdown-item btn btn-sm btn-light" @click="downloadDatabase">Download Database</button>
+				</div>
+			</span>
+		</h1>	
+	</header>
+	<br />
+	<section id="section" class="m-4" v-show="RootV.isReady">
+		<h4>Current Reach</h4>
+		<div v-for="direction in RootV.database.directions">
+			<h6>{{direction.title}}</h6>
+			<div class="progress">
+				<div class="progress-bar progress-bar-striped bg-success" :style="{width:String((direction.reach/direction.nop)*100)+'%'}"></div>
+			</div>
+			<p>
+				<span class="badge badge-success">{{Math.round((direction.reach/direction.nop)*100)}}%</span>
+				<span class="badge badge-light">{{direction.reach}} of {{direction.nop}}</span>
+			</p>
+		</div>
+	</section>
+	<br />
+	<section id="last-progress" class="m-4" v-show="RootV.isReady">
+		<h4>Last Progress</h4>
+		<p>{{RootV.database.progresses.length?RootV.database.progresses[RootV.database.progresses.length-1].comment:''}}</p>
+		<div v-for="step in (RootV.database.progresses.length?RootV.database.progresses[RootV.database.progresses.length-1].steps:null)">
+			<h6>{{RootV.getDirection(step.in_direction).title}}</h6>
+			<div class="progress">
+				<div class="progress-bar progress-bar-striped bg-success" :style="{width:String(((RootV.getDirection(step.in_direction).reach-step.number)/RootV.getDirection(step.in_direction).nop)*100)+'%'}"></div>
+				<div class="progress-bar progress-bar-striped bg-danger" :style="{width:String((step.number/RootV.getDirection(step.in_direction).nop)*100)+'%'}"></div>
+			</div>
+			<p>
+				<span class="badge badge-success">
+					{{Math.round(((RootV.getDirection(step.in_direction).reach-step.number)/RootV.getDirection(step.in_direction).nop)*100)}}%
+					{{RootV.getDirection(step.in_direction).reach-step.number}}
+				</span>
+				<span class="badge badge-danger">
+					{{Math.round((step.number/RootV.getDirection(step.in_direction).nop)*100)}}%
+					{{step.number}}
+				</span>
+			</p>
+		</div>
+	</section>
+	
+	<div id="new-direction-modal" class="modal fade" data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h4 class="modal-title">Your New Progress Direction</h4>
+			  </div>
+			  <div class="modal-body">
+				<div class="form-group">
+					<label>Title</label>
+					<input type="text" class="form-control" v-model="title">
+				</div>
+				<div class="form-group">
+					<label>Number of Pieces</label>
+					<input type="number" class="form-control" v-model.number="nop">
+				</div>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-success" @click="add">Add</button>
+				<button type="button" class="btn btn-danger" @click="cancel">Cancel</button>
+			  </div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="new-progress-modal" class="modal fade" data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Your New Progress</h4>
+				</div>
+				<div class="modal-body aa-card-column">
+					<div class="form-group">
+						<label>Comment</label>
+						<textarea class="form-control" rows="3" v-model="progress.comment"></textarea>
+					</div>
+					<div v-for="step in progress.steps" class="card card-body bg-light">
+						<div class="form-group">
+							<label>In Direction</label>
+							<select class="form-control" v-model="step.in_direction">
+								<option v-for="direction in RootV.database.directions" :value="direction.id">
+									{{direction.id}}. {{direction.title}}
+								</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Number</label>
+							<input type="number" class="form-control" v-model.number="step.number">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-warning" @click="addStep">Add Step</button>
+					<button type="button" class="btn btn-success" @click="submit">Submit</button>
+					<button type="button" class="btn btn-danger" @click="cancel">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="enter-modal" class="modal fade" data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h4 class="modal-title">Hello</h4>
+			  </div>
+			  <div class="modal-body">
+				<div class="btn-group btn-small">
+					<button type="button" class="btn btn-sm btn-light" @click="type = 'new'">New</button>
+					<button type="button" class="btn btn-sm btn-light" @click="type = 'open'">Open</button>
+				</div>
+				<div v-show="type == 'new'" class="form-group card card-body">
+					<label>New Progresser</label>
+					<input type="text" class="form-control" v-model="defualt_database.progresser">
+				</div>
+				<div v-show="type == 'open'" class="form-group card card-body">
+					<label>Database File</label>
+					<input type="file" class="orm-control-file border" @change="fileInput($event)">
+				</div>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-success" @click="enter">Enter</button>
+			  </div>
+			</div>
+		</div>
+	</div>
+
+	<script src="source\jquery.min.js"></script>
+	<script src="source\popper.min.js"></script>
+	<script src="source\bootstrap.min.js"></script>
+	<script src="source\vue.min.js"></script>
+	<script src="source\aa.js"></script>
+	<script src="myprogress.js"></script>
+</body>
+</html>
